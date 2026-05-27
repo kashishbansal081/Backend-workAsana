@@ -14,7 +14,7 @@ const jwt = require("jsonwebtoken");
 const saltrounds = 12;
 
 const corOptions = {
-  origin: "http://localhost:3001",
+  origin: "*",
   optionsSuccessStatus: 200,
 };
 
