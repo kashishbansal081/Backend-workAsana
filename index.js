@@ -16,6 +16,8 @@ const saltrounds = 12;
 const corOptions = {
   origin: "*",
   optionsSuccessStatus: 200,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corOptions));
