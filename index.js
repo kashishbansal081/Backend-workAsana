@@ -736,3 +736,5 @@ app.get("/v1/users", verifyJWT, async (req, res) => {
     });
   }
 });
+
+export default app;
