@@ -15,7 +15,8 @@ const saltrounds = 12;
 
 const corOptions = {
   origin: "*",
-  optionsSuccessStatus: 200,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corOptions));
@@ -45,6 +46,39 @@ const verifyJWT = (req, res, next) => {
 
     next();
   });
+};
+
+const updateProjectStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ["To Do", "In Progress", "Completed", "Blocked"];
+
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status",
+      });
+    }
+
+    const updatedProject = await Project.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true },
+    );
+
+    if (!updatedProject) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    res.status(200).json(updatedProject);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 // Auth Fetch Calls
@@ -185,9 +219,7 @@ app.get("/v1/teams/:id", verifyJWT, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const team = await Team.findById(id)
-      .populate("members")
-      .populate("owner");
+    const team = await Team.findById(id).populate("members").populate("owner");
 
     if (!team) {
       return res.status(404).json({
@@ -205,13 +237,9 @@ app.get("/v1/teams/:id", verifyJWT, async (req, res) => {
 
 app.put("/v1/teams/:id", verifyJWT, async (req, res) => {
   try {
-    const updatedTeam = await Team.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-      },
-    )
+    const updatedTeam = await Team.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    })
       .populate("owner")
       .populate("members");
 
@@ -382,6 +410,8 @@ app.delete("/v1/projects/:id", verifyJWT, async (req, res) => {
   }
 });
 
+app.patch("/v1/projects/:id/status", verifyJWT, updateProjectStatus);
+
 // Tasks Fetch Calls
 
 app.get("/v1/tasks", verifyJWT, async (req, res) => {
@@ -424,27 +454,23 @@ app.get("/v1/tasks/:id", verifyJWT, async (req, res) => {
   }
 });
 
-app.get(
-  "/v1/tasks/project/:projectId",
-  verifyJWT,
-  async (req, res) => {
-    const { projectId } = req.params;
+app.get("/v1/tasks/project/:projectId", verifyJWT, async (req, res) => {
+  const { projectId } = req.params;
 
-    try {
-      const tasks = await Task.find({
-        project: projectId,
-      });
+  try {
+    const tasks = await Task.find({
+      project: projectId,
+    });
 
-      res.status(200).json({
-        tasks,
-      });
-    } catch (error) {
-      res.status(500).json({
-        error: error.message,
-      });
-    }
-  },
-);
+    res.status(200).json({
+      tasks,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
 
 app.post("/v1/tasks", verifyJWT, async (req, res) => {
   const {
@@ -735,6 +761,6 @@ app.get("/v1/users", verifyJWT, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log("Server is running on port" ,PORT);
+app.listen(3001, () => {
+  console.log("Server is running on port", 3001);
 });
