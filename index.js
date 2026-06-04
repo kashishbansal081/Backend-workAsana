@@ -14,7 +14,7 @@ const jwt = require("jsonwebtoken");
 const saltrounds = 12;
 
 const corOptions = {
-  origin: "*",
+  origin: "https://backend-work-asana.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
