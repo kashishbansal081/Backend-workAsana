@@ -4,8 +4,11 @@ require("dotenv").config();
 const DB = process.env.MONGODB_URL;
 
 const dbConnect = async () => {
+  console.log('Connecting to DB...');
   await mongoose
-    .connect(DB)
+    .connect(DB, {
+      serverSelectionTimeoutMS: 30000,
+    })
     .then(() => {
       console.log("DB connected");
     })
