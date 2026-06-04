@@ -760,3 +760,6 @@ app.get("/v1/users", verifyJWT, async (req, res) => {
     });
   }
 });
+
+
+module.exports = app;
